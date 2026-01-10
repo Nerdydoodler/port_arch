@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Work - Artist Portfolio{% endblock %}
+
+{% block content %}
+<section class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-5xl font-bold text-center mb-8">Work</h1>
+        <p class="text-xl text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+            Explore a diverse collection of concept art, illustrations, and design work 
+            across various industries and mediums.
+        </p>
+
+        <!-- Category Filter -->
+        <div class="flex justify-center mb-12">
+            <div class="bg-white rounded-lg shadow-md p-1 inline-flex">
+                <a href="{{ url_for('work') }}" class="px-6 py-2 rounded-md {% if current_category == 'all' %}bg-purple-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+                    All Work
+                </a>
+                {% for category in categories %}
+                <a href="{{ url_for('work') }}?category={{ category }}" class="px-6 py-2 rounded-md {% if current_category == category %}bg-purple-600 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %} transition">
+                    {{ category.replace('-', ' ').title() }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Artwork Grid -->
+        <div class="portfolio-grid">
+            {% for artwork in artworks %}
+            <div class="artwork-card bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="openArtworkModal({{ artwork.id }})">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+                    <img src="{{ artwork.image_url }}" alt="{{ artwork.title }}" class="w-full h-64 object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-2">{{ artwork.title }}</h3>
+                    <p class="text-gray-600 mb-2">{{ artwork.client }}</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-sm text-purple-600 font-medium">{{ artwork.category.replace('-', ' ').title() }}</p>
+                        {% if artwork.year %}
+                        <p class="text-sm text-gray-500">{{ artwork.year }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if artworks|length == 0 %}
+        <div class="text-center py-12">
+            <p class="text-gray-500 text-lg">No artwork found in this category.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Artwork Modal -->
+<div id="artworkModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="relative">
+            <button onclick="closeArtworkModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <div id="modalContent" class="p-8">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openArtworkModal(artworkId) {
+    fetch(`/api/artwork/${artworkId}`)
+        .then(response => response.json())
+        .then(data => {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <img src="${data.image_url}" alt="${data.title}" class="w-full rounded-lg">
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-bold mb-4">${data.title}</h2>
+                        <p class="text-gray-600 mb-4">${data.client}</p>
+                        <p class="text-gray-700 mb-4">${data.description || 'No description available.'}</p>
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span><i class="fas fa-folder mr-1"></i> ${data.category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                            <span><i class="fas fa-calendar mr-1"></i> ${data.year || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('artworkModal').classList.remove('hidden');
+        })
+        .catch(error => console.error('Error loading artwork:', error));
+}
+
+function closeArtworkModal() {
+    document.getElementById('artworkModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('artworkModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeArtworkModal();
+    }
+});
+</script>
+{% endblock %}
