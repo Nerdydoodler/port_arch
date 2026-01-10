@@ -1,4 +1,4 @@
-# Artist Portfolio Website
+# NerdyDoodler's Art Portfolio Website
 
 A professional Python Flask-based artist portfolio website inspired by tommyarnoldart.com. This website showcases artwork, provides contact functionality, and includes client information - perfect for artists, illustrators, and concept designers.
 
