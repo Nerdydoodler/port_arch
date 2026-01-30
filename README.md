@@ -2,6 +2,8 @@
 
 A professional Python Flask-based artist portfolio website inspired by tommyarnoldart.com. This website showcases artwork, provides contact functionality, and includes client information - perfect for artists, illustrators, and concept designers.
 
+http://portfolio.eba-prxmsc4t.us-east-1.elasticbeanstalk.com/
+
 ## Features
 
 - **Portfolio Gallery**: Categorized artwork display with concept art and illustrations
